@@ -165,8 +165,20 @@ document.getElementById('contactForm').addEventListener('submit',async function(
     try{await navigator.share({files:[file],title:'mimi fortune 今日の占い'});status.textContent='';return}
     catch(e){if(e.name==='AbortError')return}
    }
-   const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=file.name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
-   status.textContent='画像を保存しました。LINEで画像を選んで友だちに送ってね。';
+   // LINEのアプリ内ブラウザではダウンロードが制限されるため、画像を画面に表示する。
+   let preview=document.getElementById('fortuneSharePreview');
+   if(!preview){
+    preview=document.createElement('div');preview.id='fortuneSharePreview';
+    preview.style.cssText='margin:18px auto 10px;max-width:420px;text-align:center';
+    preview.innerHTML='<p style="font-size:14px;line-height:1.8;color:#fff2cf">画像を長押しして「画像を保存」を選んでね。保存した画像はLINEで友だちに送れるよ。</p><img id="fortuneSharePreviewImage" alt="今日の占い結果のシェア画像" style="display:block;width:100%;height:auto;border-radius:18px;border:2px solid #ffffff80;-webkit-touch-callout:default;user-select:auto"><a id="fortuneShareOpenImage" target="_blank" rel="noopener" style="display:inline-block;margin:12px 0;padding:10px 18px;border-radius:30px;background:#ffe2af;color:#35234c;text-decoration:none;font-weight:bold">画像を大きく開く</a>';
+    status.insertAdjacentElement('afterend',preview);
+   }
+   const imageUrl=canvas.toDataURL('image/png');
+   document.getElementById('fortuneSharePreviewImage').src=imageUrl;
+   document.getElementById('fortuneShareOpenImage').href=imageUrl;
+   preview.style.display='block';
+   status.textContent='占い結果の画像ができたよ！ 下の画像を長押しして保存してね。';
+   preview.scrollIntoView({behavior:'smooth',block:'center'});
   }catch(e){status.textContent='画像を作成できませんでした。別のブラウザでお試しください。';console.error(e)}
  }
  shareBtn.addEventListener('click',share);
