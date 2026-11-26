@@ -142,7 +142,7 @@ document.getElementById('contactForm').addEventListener('submit',async function(
   const c=document.createElement('canvas');c.width=1080;c.height=1350;
   const x=c.getContext('2d');
   const bg=x.createLinearGradient(0,0,1080,1350);bg.addColorStop(0,'#f2e8fa');bg.addColorStop(1,'#fff9f2');x.fillStyle=bg;x.fillRect(0,0,1080,1350);
-  x.fillStyle='#ffffff';x.beginPath();x.roundRect(68,65,944,1220,48);x.fill();x.strokeStyle='#dfcbe9';x.lineWidth=4;x.stroke();
+  x.fillStyle='#ffffff';x.beginPath();if(typeof x.roundRect==='function'){x.roundRect(68,65,944,1220,48)}else{x.rect(68,65,944,1220)}x.fill();x.strokeStyle='#dfcbe9';x.lineWidth=4;x.stroke();
   x.textAlign='center';x.fillStyle='#80669b';x.font='bold 62px Georgia,serif';x.fillText('mimi fortune',540,200);
   x.font='36px sans-serif';x.fillText('☾  今日の小さな幸せ占い  ✧',540,280);
   x.font='31px sans-serif';x.fillStyle='#9885a9';x.fillText(jstDay().replaceAll('-',' / '),540,350);
@@ -161,7 +161,7 @@ document.getElementById('contactForm').addEventListener('submit',async function(
    const canvas=makeCard();const blob=await new Promise(r=>canvas.toBlob(r,'image/png'));
    if(!blob)throw new Error('画像を生成できませんでした');
    const file=new File([blob],'mimi-fortune-'+jstDay()+'.png',{type:'image/png'});
-   if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+   if(!/Line\//i.test(navigator.userAgent) && navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
     try{await navigator.share({files:[file],title:'mimi fortune 今日の占い'});status.textContent='';return}
     catch(e){if(e.name==='AbortError')return}
    }
@@ -179,7 +179,7 @@ document.getElementById('contactForm').addEventListener('submit',async function(
    preview.style.display='block';
    status.textContent='占い結果の画像ができたよ！ 下の画像を長押しして保存してね。';
    preview.scrollIntoView({behavior:'smooth',block:'center'});
-  }catch(e){status.textContent='画像を作成できませんでした。別のブラウザでお試しください。';console.error(e)}
+  }catch(e){status.textContent='画像を作成できませんでした（'+(e && e.message ? e.message : '不明なエラー')+'）。画面を撮影して教えてね。';console.error(e)}
  }
  shareBtn.addEventListener('click',share);
  if(new URLSearchParams(location.search).get('share')==='1'){
